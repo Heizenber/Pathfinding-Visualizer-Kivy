@@ -1,0 +1,52 @@
+<Spot>:
+    canvas:
+        Color:
+            rgba: root.color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+
+<Interface>:
+    orientation: 'vertical'
+    size: root.size
+
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: 1, 0.085
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 1.8, 1
+
+            Label:
+                font_size: 14
+                text: 'Number of Spots: ' + str(int(slider.value))
+
+            Slider:
+                id: slider
+                min: 50
+                max: 200
+                value: 100
+                step: 1
+                orientation: 'horizontal'
+
+        Spinner:
+            id: algorithm
+            text: 'A* Algorithm'
+            values: 'A* Algorithm', 'Dijkstra'
+
+        Button:
+            id: clear
+            text: 'Clear'
+
+        Button:
+            id: start
+            text: 'Start'
+
+        Button: 
+            id: stop
+            text: 'Stop'
+
+
+    Grid:
