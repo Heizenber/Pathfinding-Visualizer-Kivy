@@ -5,9 +5,11 @@ from kivy.uix.gridlayout import GridLayout
 from algorithms.AStarAlgorithm import aStarAlgo
 from algorithms.DijkstraAlgorithm import dijkstraAlgo
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
 from kivy.utils import get_color_from_hex
 from kivy.properties import ListProperty
 from kivy.core.window import Window
+from kivy.uix.popup import Popup
 from threading import Thread
 from colors import *
 from queue import PriorityQueue
@@ -79,6 +81,16 @@ class Grid(GridLayout):
             Thread(
                 target=algorithms[Interface.root.ids.text], args=(), daemon=True
             ).start()
+        else:
+            popup = Popup(
+                title="Warning!",
+                content=Label(
+                    text="Place a starting and ending position\n"
+                    "\t\tfor algorithm to start!"
+                ),
+                auto_dismiss=False,
+            )
+            popup.open()
 
 
 class Interface(BoxLayout):
