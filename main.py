@@ -6,7 +6,7 @@ from algorithms.AStarAlgorithm import aStarAlgo
 from algorithms.DijkstraAlgorithm import dijkstraAlgo
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
-from kivy.utils import get_color_from_hex
+from kivy.utils import get_color_from_hex, get_hex_from_color
 from kivy.properties import ListProperty
 from kivy.core.window import Window
 from kivy.uix.popup import Popup
@@ -21,7 +21,7 @@ algorithms = {"A* Algorithm": aStarAlgo, "Dijkstra": dijkstraAlgo}
 
 
 class Spot(Widget):
-    color = ListProperty(*get_color_from_hex(WHITE))
+    color = ListProperty(get_color_from_hex(WHITE))
     startPresent = False
     endPresent = False
 
@@ -31,33 +31,41 @@ class Spot(Widget):
     def on_touch_down(self, touch):
         x, y = touch.pos
         if self.collide_point(x, y):
-            if not Spot.startPresent and self.color != BLUE:
-                self.color = RED
+            if not Spot.startPresent and get_hex_from_color(self.color) != BLUE:
+                self.color = get_color_from_hex(RED)
                 Spot.startPresent = True
 
-            elif not Spot.endPresent and self.color != RED:
-                self.color = BLUE
+            elif not Spot.endPresent and get_hex_from_color(self.color) != RED:
+                self.color = get_color_from_hex(BLUE)
                 Spot.endPresent = True
             else:
-                if self.color == BLACK:
-                    self.color = WHITE
-                elif self.color == RED:
-                    self.color = WHITE
+                if get_hex_from_color(self.color) == BLACK:
+                    self.color = get_color_from_hex(WHITE)
+                elif get_hex_from_color(self.color) == RED:
+                    self.color = get_color_from_hex(WHITE)
                     Spot.startPresent = False
-                elif self.color == BLUE:
-                    self.color = WHITE
+                elif get_hex_from_color(self.color) == BLUE:
+                    self.color = get_color_from_hex(WHITE)
                     Spot.endPresent = False
                 else:
-                    self.color = BLACK
-            return
+                    if (
+                        get_hex_from_color(self.color) != RED
+                        or get_hex_from_color(self.color) != BLUE
+                    ):
+                        self.color = get_color_from_hex(BLACK)
+            return True
         else:
             return super().on_touch_down(touch)
 
     def on_touch_move(self, touch):
         x, y = touch.pos
-        if self.collide_point(x, y) and self.color == WHITE:
-            self.color = BLACK
-            return
+        if self.collide_point(x, y):
+            if (
+                get_hex_from_color(self.color) != RED
+                or get_hex_from_color(self.color) != BLUE
+            ):
+                self.color = get_color_from_hex(BLACK)
+            return True
         else:
             return super().on_touch_down(touch)
 
