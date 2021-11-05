@@ -1,3 +1,6 @@
+from kivy.config import Config
+
+Config.set("input", "mouse", "mouse,multitouch_on_demand")
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.lang import Builder
@@ -29,6 +32,8 @@ class Node(Widget):
         self.id = str(row) + "-" + str(col)
         self.row = row
         self.col = col
+        self.isStart = False
+        self.isEnd = False
         self.distanceFromStart = float("inf")
         self.estimatedDistanceToEnd = float("inf")
         self.cameFrom = None
@@ -36,46 +41,35 @@ class Node(Widget):
     def on_touch_down(self, touch):
         x, y = touch.pos
         if self.collide_point(x, y):
-            if not Node.startPresent and get_hex_from_color(self.color) != BLUE:
-                self.color = get_color_from_hex(RED)
-                Node.startPresent = True
+            # print(int(round(self.center_x, 0)), int(round(self.center_y, 0)))
+            # print(self.row, self.col)
+            # return True
+            if touch.button == "left":
+                if self.color == WHITE:
+                    if Node.startPresent == False:
+                        self.color = BLUE
+                        Node.startPresent = True
+                        self.isStart = True
+                    elif self.endPresent == False:
+                        self.color = RED
+                        Node.endPresent = True
+                        self.isEnd = True
+                    elif self.color != BLUE or self.color != RED:
+                        self.color = BLACK
+            elif touch.button == "right" and self.color != WHITE:
+                if self.color == BLUE:
+                    Node.startPresent = False
+                    self.isStart = False
+                elif self.color == RED:
+                    Node.endPresent = False
+                    self.isEnd = False
+                self.color = WHITE
 
-            elif not Node.endPresent and get_hex_from_color(self.color) != RED:
-                self.color = get_color_from_hex(BLUE)
-                Node.endPresent = True
-            else:
-                if touch.button == "right":
-                    if get_hex_from_color(self.color) == BLACK:
-                        self.color = get_color_from_hex(WHITE)
-                # if get_hex_from_color(self.color) == BLACK:
-                #     self.color = get_color_from_hex(WHITE)
-                # elif get_hex_from_color(self.color) == RED:
-                #     self.color = get_color_from_hex(WHITE)
-                #     Node.startPresent = False
-                # elif get_hex_from_color(self.color) == BLUE:
-                #     self.color = get_color_from_hex(WHITE)
-                #     Node.endPresent = False
-                else:
-                    if (
-                        get_hex_from_color(self.color) != RED
-                        or get_hex_from_color(self.color) != BLUE
-                    ):
-                        self.color = get_color_from_hex(BLACK)
-            return True
-        else:
-            return super().on_touch_down(touch)
+        return super().on_touch_down(touch)
 
     def on_touch_move(self, touch):
-        x, y = touch.pos
-        if self.collide_point(x, y):
-            if (
-                get_hex_from_color(self.color) != RED
-                or get_hex_from_color(self.color) != BLUE
-            ):
-                self.color = get_color_from_hex(BLACK)
-            return True
-        else:
-            return super().on_touch_down(touch)
+        self.on_touch_down(touch)
+        return super().on_touch_down(touch)
 
 
 class Grid(GridLayout):
@@ -91,8 +85,8 @@ class Grid(GridLayout):
     def generate_grid(self):
         self.grid = [
             self.add_widget(Node(i, j))
-            for j in range(self.cols)
             for i in range(self.rows)
+            for j in range(self.cols)
         ]
 
     def start(self):
@@ -122,5 +116,5 @@ class PathfindingApp(App):
 
 
 if __name__ == "__main__":
-    Window.clearcolor = get_color_from_hex(LIGHT_GRAY)
+    Window.clearcolor = LIGHT_GRAY
     PathfindingApp().run()
