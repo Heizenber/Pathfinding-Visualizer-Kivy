@@ -10,6 +10,8 @@
 <Interface>:
     orientation: 'vertical'
     size: root.size
+    grid: grid
+    algorithm: algorithm
 
     BoxLayout:
         orientation: 'horizontal'
@@ -39,10 +41,12 @@
         Button:
             id: clear
             text: 'Clear'
+            on_press: root.clear_grid()
 
         Button:
             id: start
             text: 'Start'
+            on_press: root.start_algorithm()
 
         Button: 
             id: stop
@@ -50,3 +54,4 @@
 
 
     Grid:
+        id: grid

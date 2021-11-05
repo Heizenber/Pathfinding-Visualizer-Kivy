@@ -14,6 +14,7 @@ from kivy.core.window import Window
 from kivy.uix.popup import Popup
 from threading import Thread
 from colors import *
+from kivy.properties import ObjectProperty
 
 
 Builder.load_file("interface.kv")
@@ -29,7 +30,7 @@ class Node(Widget):
 
     def __init__(self, row, col, **kwargs):
         super().__init__(**kwargs)
-        self.id = str(row) + "-" + str(col)
+        self.idx = str(row) + "-" + str(col)
         self.row = row
         self.col = col
         self.isStart = False
@@ -51,7 +52,7 @@ class Node(Widget):
                         Node.startPresent = True
                         self.isStart = True
                     elif self.endPresent == False:
-                        self.color = RED
+                        self.color = BROWN
                         Node.endPresent = True
                         self.isEnd = True
                     elif self.color != BLUE or self.color != RED:
@@ -60,7 +61,7 @@ class Node(Widget):
                 if self.color == BLUE:
                     Node.startPresent = False
                     self.isStart = False
-                elif self.color == RED:
+                elif self.color == BROWN:
                     Node.endPresent = False
                     self.isEnd = False
                 self.color = WHITE
@@ -70,6 +71,16 @@ class Node(Widget):
     def on_touch_move(self, touch):
         self.on_touch_down(touch)
         return super().on_touch_down(touch)
+
+    def setOpen(self):
+        self.color = GREEN
+
+    def setClosed(self):
+        self.color = RED
+
+    ### why __str__ not working ###
+    # def __str__(self):
+    #     return self.idx
 
 
 class Grid(GridLayout):
@@ -81,18 +92,22 @@ class Grid(GridLayout):
         self.generate_grid()
         self.open_set = []
         self.closed_set = []
+        self.grid[1][0].color = BLACK
 
     def generate_grid(self):
-        self.grid = [
-            self.add_widget(Node(i, j))
-            for i in range(self.rows)
-            for j in range(self.cols)
-        ]
+        self.grid = [[Node(i, j) for j in range(self.cols)] for i in range(self.rows)]
+        # for i in self.grid:
+        #     for j in i:
+        #         self.add_widget(j)
+
+        [self.add_widget(col) for row in self.grid for col in row]
 
     def start(self):
         if Node.startPresent and Node.endPresent:
             Thread(
-                target=algorithms[Interface.root.ids.text], args=(), daemon=True
+                target=algorithms[Interface.algorithm.text],
+                args=(self, self.grid),
+                daemon=True,
             ).start()
         else:
             popup = Popup(
@@ -105,9 +120,26 @@ class Grid(GridLayout):
             )
             popup.open()
 
+    def clear(self):
+        Thread(target=self.clear_widgets, daemon=True).start()
+        # self.clear_widgets()
+        Node.startPresent = False
+        Node.endPresent = False
+        self.generate_grid()
+
 
 class Interface(BoxLayout):
-    pass
+    grid = ObjectProperty()
+    algorithm = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def clear_grid(self):
+        self.grid.clear()
+
+    def start_algorithm(self):
+        self.grid.start()
 
 
 class PathfindingApp(App):
