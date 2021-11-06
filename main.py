@@ -92,26 +92,22 @@ class Grid(GridLayout):
         self.generate_grid()
         self.open_set = []
         self.closed_set = []
-        self.grid[1][0].color = BLACK
 
     def generate_grid(self):
-        self.grid = [[Node(i, j) for j in range(self.cols)] for i in range(self.rows)]
-        # for i in self.grid:
-        #     for j in i:
-        #         self.add_widget(j)
-
-        [self.add_widget(col) for row in self.grid for col in row]
+        self.matrix = [[Node(i, j) for j in range(self.cols)] for i in range(self.rows)]
+        [self.add_widget(node) for row in self.matrix for node in row]
+        self.grid = [self.matrix]
 
     def start(self):
         if Node.startPresent and Node.endPresent:
             Thread(
-                target=algorithms[Interface.algorithm.text],
-                args=(self, self.grid),
+                target=aStarAlgo,
+                args=(self.grid),
                 daemon=True,
             ).start()
         else:
             popup = Popup(
-                title="Warning!",
+                title="\t\tWarning!",
                 content=Label(
                     text="Place a starting and ending position\n"
                     "\t\tfor algorithm to start!"

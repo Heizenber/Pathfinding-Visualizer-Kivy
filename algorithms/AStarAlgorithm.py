@@ -1,16 +1,48 @@
 from colors import *
+import time
 
 
-def get_start_node(grid):
-    for node in grid:
-        if node.isStart == True:
-            return node
+def aStarAlgo(grid):
+    startNode = get_start_node(grid)
+    endNode = get_end_node(grid)
 
+    startNode.distanceFromStart = 0
+    startNode.estimatedDistanceToEnd = calculateManhattanDistance(startNode, endNode)
 
-def get_end_node(grid):
-    for node in grid:
-        if node.isEnd == True:
-            return node
+    nodesToVisit = MinHeap([startNode])
+
+    while not nodesToVisit.isEmpty():
+        currentMinDistanceNode = nodesToVisit.remove()
+
+        if currentMinDistanceNode.color == GREEN:
+            currentMinDistanceNode.color = RED
+
+        if currentMinDistanceNode == endNode:
+            break
+
+        neighbors = getNeighboringNodes(currentMinDistanceNode, grid)
+        for neighbor in neighbors:
+            if neighbor.color == BLACK:
+                continue
+            neighbor.color = RED
+
+            tentativeDistanceToNeighbor = currentMinDistanceNode.distanceFromStart + 1
+            if tentativeDistanceToNeighbor >= neighbor.distanceFromStart:
+                continue
+
+            neighbor.cameFrom = currentMinDistanceNode
+            neighbor.distanceFromStart = tentativeDistanceToNeighbor
+            neighbor.estimatedDistanceToEnd = (
+                tentativeDistanceToNeighbor
+                + calculateManhattanDistance(neighbor, endNode)
+            )
+            if not nodesToVisit.containsNode(neighbor):
+                nodesToVisit.insert(neighbor)
+                neighbor.color = GREEN
+            else:
+                nodesToVisit.update(neighbor)
+            time.sleep(0.005)
+    return reconstructPath(startNode, endNode)
 
 
 def calculateManhattanDistance(currentNode, endNode):
@@ -72,126 +104,69 @@ class MinHeap:
 
         self.swap(0, len(self.heap) - 1, self.heap)
         node = self.heap.pop()
-        del self.nodePositionsInHeap[node.id]
+        del self.nodePositionsInHeap[node.idx]
         self.siftDown(0, len(self.heap) - 1, self.heap)
         return node
 
     def insert(self, node):
         self.heap.append(node)
-        self.nodePositionsInHeap[node.id] = len(self.heap) - 1
+        self.nodePositionsInHeap[node.idx] = len(self.heap) - 1
         self.siftUp(len(self.heap) - 1, self.heap)
 
     def swap(self, i, j, heap):
-        self.nodePositionsInHeap[heap[i].id] = j
-        self.nodePositionsInHeap[heap[j].id] = i
+        self.nodePositionsInHeap[heap[i].idx] = j
+        self.nodePositionsInHeap[heap[j].idx] = i
         heap[i], heap[j] = heap[j], heap[i]
 
     def containsNode(self, node):
-        return node.id in self.nodePositionsInHeap
+        return node.idx in self.nodePositionsInHeap
 
     def update(self, node):
-        self.siftUp(self.nodePositionsInHeap[node.id], self.heap)
+        self.siftUp(self.nodePositionsInHeap[node.idx], self.heap)
 
 
-# def getNeighboringNodes(node, nodes, parentClass):
-#     	neighbors = []
+def getNeighboringNodes(node, nodes):
+    neighbors = []
 
-# 	numRows = parentClass.rows
-# 	numCols = parentClass.cols
+    numRows = len(nodes)
+    numCols = len(nodes[0])
 
-# 	row = node.row
-# 	col = node.col
+    row = node.row
+    col = node.col
 
-#     for child in nodes:
-#         if row < numRows - 1:
-
-
-# for child in nodes:
-#     if row < numRows - 1:
-#         neighbors.append(nodes[row + 1][col])
-#     if row > 0:
-#         neighbors.append(nodes[row - 1][col])
-#     if col < numCols - 1:
-#         neighbors.append(nodes[row][col + 1])
-#     if col > 0:
-#         neighbors.append(nodes[row][col - 1])
-# return neighbors
+    if row < numRows - 1:
+        neighbors.append(nodes[row + 1][col])
+    if row > 0:
+        neighbors.append(nodes[row - 1][col])
+    if col < numCols - 1:
+        neighbors.append(nodes[row][col + 1])
+    if col > 0:
+        neighbors.append(nodes[row][col - 1])
+    return neighbors
 
 
-def aStarAlgo(Interface, grid):
-    # startNode = get_start_node(grid)
-    # endNode = get_end_node(grid)
-
-    # startNode.distanceFromStart = 0
-    # startNode.estimatedDistanceToEnd = calculateManhattanDistance(startNode, endNode)
-
-    # nodesToVisit = MinHeap([startNode])
-
-    # while not nodesToVisit.isEmpty():
-    #     currentMinDistanceNode = nodesToVisit.remove()
-
-    #     if currentMinDistanceNode == endNode:
-    #         break
-
-    #     neighbors = getNeighboringNodes(currentMinDistanceNode, grid, theGrid)
-
-    pass
+def get_start_node(grid):
+    for row in grid:
+        for node in row:
+            if node.isStart == True:
+                return node
 
 
-# def aStarAlgorithm(startRow, startCol, endRow, endCol, graph):
-#   nodes = initializeNodes(graph)
-
-# 	startNode = nodes[startRow][startCol]
-# 	endNode = nodes[endRow][endCol]
-
-# 	startNode.distanceFromStart = 0
-# 	startNode.estimatedDistanceToEnd = calculateManhattanDistance(startNode, endNode)
-
-# 	nodesToVisit = MinHeap([startNode])
-
-# 	while not nodesToVisit.isEmpty():
-# 		currentMinDistanceNode = nodesToVisit.remove()
-
-# 		if currentMinDistanceNode == endNode:
-# 			break
-
-# 		neighbors = getNeighboringNodes(currentMinDistanceNode, nodes)
-# 		for neighbor in neighbors:
-# 			if neighbor.value == 1:
-# 				continue
-
-# 			tentativeDistanceToNeighbor = currentMinDistanceNode.distanceFromStart + 1
-# 			if tentativeDistanceToNeighbor >= neighbor.distanceFromStart:
-# 				continue
-
-# 			neighbor.cameFrom = currentMinDistanceNode
-# 			neighbor.distanceFromStart = tentativeDistanceToNeighbor
-# 			neighbor.estimatedDistanceToEnd = tentativeDistanceToNeighbor + calculateManhattanDistance(
-# 											neighbor, endNode)
-# 			if not nodesToVisit.containsNode(neighbor):
-# 				nodesToVisit.insert(neighbor)
-# 			else:
-# 				nodesToVisit.update(neighbor)
-# 	return reconstructPath(endNode)
+def get_end_node(grid):
+    for row in grid:
+        for node in row:
+            if node.isEnd == True:
+                return node
 
 
-# def initializeNodes(graph):
-# 	nodes = []
+def reconstructPath(startNode, endNode):
+    if not endNode.cameFrom:
+        return
 
-# 	for i, row in enumerate(graph):
-# 		nodes.append([])
-# 		for j, value in enumerate(row):
-# 			nodes[i].append(Node(i, j, value))
-# 	return nodes
-
-
-# def reconstructPath(endNode):
-# 	if not endNode.cameFrom:
-# 		return []
-
-# 	currentNode = endNode
-# 	path = []
-# 	while currentNode:
-# 		path.append([currentNode.row, currentNode.col])
-# 		currentNode = currentNode.cameFrom
-# 	return list(reversed(path))
+    currentNode = endNode
+    while currentNode:
+        currentNode = currentNode.cameFrom
+        time.sleep(0.01)
+        currentNode.color = PURPLE
+    startNode.color = BLUE
+    endNode.color = BROWN
