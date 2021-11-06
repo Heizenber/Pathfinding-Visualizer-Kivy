@@ -22,9 +22,8 @@ def aStarAlgo(grid):
 
         neighbors = getNeighboringNodes(currentMinDistanceNode, grid)
         for neighbor in neighbors:
-            if neighbor.color == BLACK:
+            if neighbor.color == BLACK or neighbor.color == RED:
                 continue
-            neighbor.color = RED
 
             tentativeDistanceToNeighbor = currentMinDistanceNode.distanceFromStart + 1
             if tentativeDistanceToNeighbor >= neighbor.distanceFromStart:
@@ -42,7 +41,7 @@ def aStarAlgo(grid):
             else:
                 nodesToVisit.update(neighbor)
             time.sleep(0.005)
-    return reconstructPath(startNode, endNode)
+    reconstructPath(startNode, endNode)
 
 
 def calculateManhattanDistance(currentNode, endNode):

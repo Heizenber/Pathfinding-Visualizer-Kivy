@@ -78,10 +78,6 @@ class Node(Widget):
     def setClosed(self):
         self.color = RED
 
-    ### why __str__ not working ###
-    # def __str__(self):
-    #     return self.idx
-
 
 class Grid(GridLayout):
     def __init__(self, **kwargs):
@@ -98,10 +94,10 @@ class Grid(GridLayout):
         [self.add_widget(node) for row in self.matrix for node in row]
         self.grid = [self.matrix]
 
-    def start(self):
+    def start(self, algorithm):
         if Node.startPresent and Node.endPresent:
             Thread(
-                target=aStarAlgo,
+                target=algorithms[algorithm],
                 args=(self.grid),
                 daemon=True,
             ).start()
@@ -118,7 +114,6 @@ class Grid(GridLayout):
 
     def clear(self):
         Thread(target=self.clear_widgets, daemon=True).start()
-        # self.clear_widgets()
         Node.startPresent = False
         Node.endPresent = False
         self.generate_grid()
@@ -126,7 +121,6 @@ class Grid(GridLayout):
 
 class Interface(BoxLayout):
     grid = ObjectProperty()
-    algorithm = ObjectProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -135,7 +129,7 @@ class Interface(BoxLayout):
         self.grid.clear()
 
     def start_algorithm(self):
-        self.grid.start()
+        self.grid.start(self.ids.algorithm.text)
 
 
 class PathfindingApp(App):
