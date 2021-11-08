@@ -32,17 +32,6 @@ def dijkstraAlgo(grid):
                 neighbor.color = GREEN
 
 
-def flattenGrid(grid):
-    return [node for rows in grid for node in rows]
-
-
-def updateUnvisitedNeighbors(node, grid):
-    unvisitedNeighbors = getNeighboringNodes(node, grid)
-    for neighbor in unvisitedNeighbors:
-        neighbor.distanceFromStart = node.distanceFromStart + 1
-        neighbor.cameFrom = node
-
-
 def reconstructPath(startNode, endNode):
     if not endNode.cameFrom:
         return
@@ -75,13 +64,6 @@ def getNeighboringNodes(node, nodes):
     if col > 0:
         neighbors.append(nodes[row][col - 1])
     return neighbors
-
-
-def sortNodesByDistance(unvisitedNodes):
-    unvisitedNodes.sort(key=lambda node: node.distanceFromStart)
-    print(unvisitedNodes[0].distanceFromStart, "first node")
-    print(unvisitedNodes[20].distanceFromStart, "second node")
-    print(unvisitedNodes[-1].distanceFromStart, "last node")
 
 
 def get_start_node(grid):

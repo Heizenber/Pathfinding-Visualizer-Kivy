@@ -15,6 +15,7 @@ from kivy.uix.popup import Popup
 from threading import Thread
 from colors import *
 from kivy.properties import ObjectProperty
+from animate import animate_coloring
 
 
 Builder.load_file("interface.kv")
@@ -54,6 +55,7 @@ class Node(Widget):
                         self.isEnd = True
                     elif self.color != BLUE or self.color != RED:
                         self.color = BLACK
+                        # animate_coloring(self, BLACK)
             elif touch.button == "right" and self.color != WHITE:
                 if self.color == BLUE:
                     Node.startPresent = False
