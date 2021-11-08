@@ -42,9 +42,6 @@ class Node(Widget):
     def on_touch_down(self, touch):
         x, y = touch.pos
         if self.collide_point(x, y):
-            # print(int(round(self.center_x, 0)), int(round(self.center_y, 0)))
-            # print(self.row, self.col)
-            # return True
             if touch.button == "left":
                 if self.color == WHITE:
                     if Node.startPresent == False:
@@ -72,11 +69,8 @@ class Node(Widget):
         self.on_touch_down(touch)
         return super().on_touch_down(touch)
 
-    def setOpen(self):
-        self.color = GREEN
-
-    def setClosed(self):
-        self.color = RED
+    def __lt__(self, other):
+        return False
 
 
 class Grid(GridLayout):

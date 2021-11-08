@@ -163,7 +163,7 @@ def reconstructPath(startNode, endNode):
         return
 
     currentNode = endNode
-    while currentNode:
+    while currentNode.cameFrom:
         currentNode = currentNode.cameFrom
         time.sleep(0.01)
         currentNode.color = PURPLE
