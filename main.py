@@ -9,6 +9,7 @@ from algorithms.AStarAlgorithm import aStarAlgo
 from algorithms.DijkstraAlgorithm import dijkstraAlgo
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
+from kivy.uix.button import Button
 from kivy.properties import ListProperty
 from kivy.core.window import Window
 from kivy.uix.popup import Popup
@@ -98,14 +99,32 @@ class Grid(GridLayout):
                 daemon=True,
             ).start()
         else:
-            popup = Popup(
-                title="\t\tWarning!",
-                content=Label(
-                    text="Place a starting and ending position\n"
-                    "\t\tfor algorithm to start!"
-                ),
-                auto_dismiss=False,
+            content = BoxLayout(orientation="vertical")
+            content.add_widget(
+                Label(
+                    text="Place a starting and ending position\nfor algorithm to start!",
+                    size_hint=(0.9, 1),
+                    font_size=16,
+                )
             )
+            content.add_widget(
+                Button(
+                    text="close",
+                    on_press=lambda *args: popup.dismiss(),
+                    size_hint=(1, 0.5),
+                )
+            )
+
+            # popup = Popup(
+            #     title="\t\tWarning!",
+            #     content=Label(
+            #         text="Place a starting and ending position\n"
+            #         "\t\tfor algorithm to start!"
+            #     ),
+            #     auto_dismiss=True,
+            # )
+
+            popup = Popup(title="Warning!", content=content, size_hint=(0.4, 0.4))
             popup.open()
 
     def clear(self):
