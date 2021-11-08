@@ -40,6 +40,7 @@ class Node(Widget):
         self.distanceFromStart = float("inf")
         self.estimatedDistanceToEnd = float("inf")
         self.cameFrom = None
+        self.count = 0
 
     def on_touch_down(self, touch):
         x, y = touch.pos
