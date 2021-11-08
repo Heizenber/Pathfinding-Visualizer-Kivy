@@ -115,15 +115,6 @@ class Grid(GridLayout):
                 )
             )
 
-            # popup = Popup(
-            #     title="\t\tWarning!",
-            #     content=Label(
-            #         text="Place a starting and ending position\n"
-            #         "\t\tfor algorithm to start!"
-            #     ),
-            #     auto_dismiss=True,
-            # )
-
             popup = Popup(title="Warning!", content=content, size_hint=(0.4, 0.4))
             popup.open()
 

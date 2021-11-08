@@ -1,5 +1,6 @@
 from colors import *
 import time
+from queue import PriorityQueue
 
 
 def aStarAlgo(grid):
@@ -8,40 +9,39 @@ def aStarAlgo(grid):
 
     startNode.distanceFromStart = 0
     startNode.estimatedDistanceToEnd = calculateManhattanDistance(startNode, endNode)
+    count = 0
+    open_set = PriorityQueue()
+    open_set.put((0, count, startNode))
 
-    nodesToVisit = MinHeap([startNode])
+    open_set_hash = {startNode}
 
-    while not nodesToVisit.isEmpty():
-        currentMinDistanceNode = nodesToVisit.remove()
+    while not open_set.empty():
 
-        if currentMinDistanceNode.color == GREEN:
-            currentMinDistanceNode.color = RED
+        currentNode = open_set.get()[2]
+        open_set_hash.remove(currentNode)
 
-        if currentMinDistanceNode == endNode:
-            break
+        if currentNode == endNode:
+            reconstructPath(startNode, endNode)
+            return
 
-        neighbors = getNeighboringNodes(currentMinDistanceNode, grid)
-        for neighbor in neighbors:
-            if neighbor.color == BLACK or neighbor.color == RED:
-                continue
+        for neighbor in getNeighboringNodes(currentNode, grid):
+            temp_g_score = currentNode.distanceFromStart + 1
 
-            tentativeDistanceToNeighbor = currentMinDistanceNode.distanceFromStart + 1
-            if tentativeDistanceToNeighbor >= neighbor.distanceFromStart:
-                continue
-
-            neighbor.cameFrom = currentMinDistanceNode
-            neighbor.distanceFromStart = tentativeDistanceToNeighbor
-            neighbor.estimatedDistanceToEnd = (
-                tentativeDistanceToNeighbor
-                + calculateManhattanDistance(neighbor, endNode)
-            )
-            if not nodesToVisit.containsNode(neighbor):
-                nodesToVisit.insert(neighbor)
-                neighbor.color = GREEN
-            else:
-                nodesToVisit.update(neighbor)
-            time.sleep(0.005)
-    reconstructPath(startNode, endNode)
+            if temp_g_score < neighbor.distanceFromStart:
+                neighbor.cameFrom = currentNode
+                neighbor.distanceFromStart = temp_g_score
+                heuristic_distance = calculateManhattanDistance(neighbor, endNode)
+                neighbor.estimatedDistanceToEnd = temp_g_score + heuristic_distance
+                if neighbor not in open_set_hash:
+                    if neighbor.color == BLACK:
+                        continue
+                    count += 1
+                    open_set.put((neighbor.estimatedDistanceToEnd, count, neighbor))
+                    open_set_hash.add(neighbor)
+                    neighbor.color = GREEN
+        if currentNode != startNode:
+            currentNode.color = RED
+        time.sleep(0.0001)
 
 
 def calculateManhattanDistance(currentNode, endNode):
@@ -163,9 +163,10 @@ def reconstructPath(startNode, endNode):
         return
 
     currentNode = endNode
-    while currentNode.cameFrom:
+    while currentNode:
+        currentNode.color = PURPLE
         currentNode = currentNode.cameFrom
         time.sleep(0.01)
-        currentNode.color = PURPLE
+
     startNode.color = BLUE
     endNode.color = BROWN
