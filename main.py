@@ -89,7 +89,6 @@ class Grid(GridLayout):
     def generate_grid(self):
         self.grid = [[Node(i, j) for j in range(self.cols)] for i in range(self.rows)]
         [self.add_widget(node) for row in self.grid for node in row]
-        # self.grid = [self.matrix]
 
     def start(self, algorithm, str_speed):
         if Node.startPresent and Node.endPresent:
