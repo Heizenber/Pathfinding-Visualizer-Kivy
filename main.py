@@ -23,6 +23,7 @@ Builder.load_file("interface.kv")
 
 
 algorithms = {"A* Algorithm": aStarAlgo, "Dijkstra": dijkstraAlgo}
+speed = {"Slow": 0.05, "Medium": 0.01, "Fast": 0.001}
 
 
 class Node(Widget):
@@ -86,15 +87,15 @@ class Grid(GridLayout):
         self.generate_grid()
 
     def generate_grid(self):
-        self.matrix = [[Node(i, j) for j in range(self.cols)] for i in range(self.rows)]
-        [self.add_widget(node) for row in self.matrix for node in row]
-        self.grid = [self.matrix]
+        self.grid = [[Node(i, j) for j in range(self.cols)] for i in range(self.rows)]
+        [self.add_widget(node) for row in self.grid for node in row]
+        # self.grid = [self.matrix]
 
-    def start(self, algorithm):
+    def start(self, algorithm, str_speed):
         if Node.startPresent and Node.endPresent:
             Thread(
                 target=algorithms[algorithm],
-                args=(self.grid),
+                args=(self.grid, speed[str_speed]),
                 daemon=True,
             ).start()
         else:
@@ -134,7 +135,7 @@ class Interface(BoxLayout):
         self.grid.clear()
 
     def start_algorithm(self):
-        self.grid.start(self.ids.algorithm.text)
+        self.grid.start(self.ids.algorithm.text, self.ids.speed.text)
 
 
 class PathfindingApp(App):

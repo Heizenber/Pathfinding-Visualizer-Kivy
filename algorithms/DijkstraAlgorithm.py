@@ -3,7 +3,7 @@ import time
 from queue import PriorityQueue
 
 
-def dijkstraAlgo(grid):
+def dijkstraAlgo(grid, speed):
     visited = {node: False for row in grid for node in row}
     startNode = get_start_node(grid)
     endNode = get_end_node(grid)
@@ -12,7 +12,7 @@ def dijkstraAlgo(grid):
     priority_queue.put((0, startNode))
     while not priority_queue.empty():
         current = priority_queue.get()[1]
-        time.sleep(0.01)
+        time.sleep(speed / 10)
         if visited[current]:
             continue
         visited[current] = True

@@ -3,7 +3,7 @@ import time
 from queue import PriorityQueue
 
 
-def aStarAlgo(grid):
+def aStarAlgo(grid, speed):
     startNode = get_start_node(grid)
     endNode = get_end_node(grid)
 
@@ -41,7 +41,7 @@ def aStarAlgo(grid):
                     neighbor.color = GREEN
         if currentNode != startNode:
             currentNode.color = RED
-        time.sleep(0.0001)
+        time.sleep(speed)
 
 
 def calculateManhattanDistance(currentNode, endNode):
