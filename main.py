@@ -84,8 +84,6 @@ class Grid(GridLayout):
         self.cols = 41
         self.spacing = 1
         self.generate_grid()
-        self.open_set = []
-        self.closed_set = []
 
     def generate_grid(self):
         self.matrix = [[Node(i, j) for j in range(self.cols)] for i in range(self.rows)]
